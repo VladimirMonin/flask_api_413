@@ -357,30 +357,165 @@ GROUP BY
     s.last_name,
     g.group_name;
 """
+
 from peewee import *
 
-db = SqliteDatabase('academy_orm.db')
+db = SqliteDatabase("academy_orm.db")
+
 
 # Группы
 class Groups(Model):
-    group_name = CharField()
-    created_at = DateTimeField(constraints=[SQL('CURRENT_TIMESTAMP')])
+    group_name = CharField(unique=True, null=False, max_length=50)
+    created_at = DateTimeField(constraints=[SQL("CURRENT_TIMESTAMP")])
 
     class Meta:
         database = db
 
 
-# Первые ORM запросы
+# Таблица students
+class Students(Model):
+    first_name = CharField(max_length=50)
+    middle_name = CharField(null=True, max_length=50)
+    last_name = CharField(max_length=50)
+    group_id = ForeignKeyField(Groups, backref="students", on_delete="RESTRICT")
+    notes = TextField(null=True)
+    created_at = DateTimeField(constraints=[SQL("CURRENT_TIMESTAMP")])
+    updated_at = DateTimeField(constraints=[SQL("CURRENT_TIMESTAMP")])
 
-# Все группы
-all_groups = Groups.select()
-[print(group.group_name) for group in all_groups]
+    class Meta:
+        database = db
+        indexes = (
+            (("group_id",), False),
+            (("last_name",), False),
+        )
 
-# Сортировка по названию по убыванию
-all_groups = all_groups.order_by(Groups.group_name.desc())
-[print(group.group_name) for group in all_groups]
 
-# Группа в которую в название входит 413
-group_413 = Groups.get(Groups.group_name.contains('413'))
-print(group_413.group_name)
+# Онлайн занятия
+class OnlineLessons(Model):
+    group_id = ForeignKeyField(Groups, backref="online_lessons", on_delete="RESTRICT")
+    lesson_date = DateField(constraints=[SQL("DATE('now')")])
+    lesson_time = TimeField(constraints=[SQL("TIME('now')")])
+    academic_hours = IntegerField(default=2)
+    telegram_record_link = CharField(null=True, max_length=300)
+    lesson_theme = CharField(max_length=200)
+    lesson_notes = TextField(null=True)
+    created_at = DateTimeField(constraints=[SQL("CURRENT_TIMESTAMP")])
+    updated_at = DateTimeField(constraints=[SQL("CURRENT_TIMESTAMP")])
 
+    class Meta:
+        database = db
+        indexes = (
+            (("group_id",), False),
+            (("lesson_date",), False),
+        )
+        constraints = [Check("academic_hours > 0 AND academic_hours <= 8")]
+
+
+# Таблица для отметки присутствия студентов на занятиях Many-to-Many
+class StudentsOnlineLessons(Model):
+    student_id = ForeignKeyField(
+        Students, backref="students_online_lessons", on_delete="CASCADE"
+    )
+    online_lesson_id = ForeignKeyField(
+        OnlineLessons, backref="students_online_lessons", on_delete="CASCADE"
+    )
+    mark = IntegerField(default=6)
+    is_active = BooleanField(default=False)
+    attendance_notes = TextField(null=True)
+    created_at = DateTimeField(constraints=[SQL("CURRENT_TIMESTAMP")])
+    updated_at = DateTimeField(constraints=[SQL("CURRENT_TIMESTAMP")])
+
+    class Meta:
+        database = db
+        indexes = (
+            (("student_id",), False),
+            (("online_lesson_id",), False),
+        )
+        constraints = [
+            Check("mark >= 1 AND mark <= 12"),
+            Check("is_active IN (0, 1)"),
+            SQL("UNIQUE(student_id, online_lesson_id)"),
+        ]
+
+
+# homeworks - таблица с текстом выданных домашних заданий
+class Homeworks(Model):
+    online_lesson_id = ForeignKeyField(
+        OnlineLessons, backref="homeworks", on_delete="CASCADE"
+    )
+    summary = TextField()
+    homework_text = TextField()
+    homework_date = DateField(constraints=[SQL("DATE('now')")])
+    deadline_date = DateField(constraints=[SQL("DATE('now', '+7 days')")])
+    is_active = BooleanField(default=True)
+    created_at = DateTimeField(constraints=[SQL("CURRENT_TIMESTAMP")])
+    updated_at = DateTimeField(constraints=[SQL("CURRENT_TIMESTAMP")])
+
+    class Meta:
+        database = db
+        constraints = [
+            Check("is_active IN (0, 1)"),
+            Check("deadline_date >= homework_date"),
+        ]
+
+
+# homeworks_students - таблица для отметки выполнения домашних заданий
+class HomeworksStudents(Model):
+    student_id = ForeignKeyField(
+        Students, backref="homeworks_students", on_delete="CASCADE"
+    )
+    homework_id = ForeignKeyField(
+        Homeworks, backref="homeworks_students", on_delete="CASCADE"
+    )
+
+    homework_text = TextField()
+    file_path = CharField(null=True, max_length=400)
+
+    status = CharField(
+        # Первый элемент - то что будет храниться в базе, второй - то что будет отображаться в интерфейсе
+        choices=[
+            ("не сдано", "не сдано"),
+            ("принято", "принято"),
+            ("проверено", "проверено"),
+            ("обратная связь выдана", "обратная связь выдана"),
+        ]
+    )
+    mark = IntegerField(null=True)
+    submission_date = DateTimeField(constraints=[SQL("CURRENT_TIMESTAMP")])
+    checked_date = DateTimeField(null=True)
+    feedback_text = TextField(null=True)
+    created_at = DateTimeField(constraints=[SQL("CURRENT_TIMESTAMP")])
+    updated_at = DateTimeField(constraints=[SQL("CURRENT_TIMESTAMP")])
+
+    class Meta:
+        database = db
+        indexes = ((("homework_id", "student_id"), True),)
+
+        constraints = [
+            Check("mark IS NULL OR (mark >= 1 AND mark <= 12)"),
+            # TODO - Убрать нафиг
+            SQL("UNIQUE(student_id, homework_id)"),
+        ]
+
+
+# students_reviews - таблица для обратной связи на студента
+class StudentsReviews(Model):
+    student_id = ForeignKeyField(
+        Students, backref="students_reviews", on_delete="CASCADE"
+    )
+    review_text = TextField()
+    review_date = DateField(constraints=[SQL("DATE('now')")])
+    review_start_date = DateField()
+    review_end_date = DateField()
+    is_published = BooleanField(default=False)
+    created_at = DateTimeField(constraints=[SQL("CURRENT_TIMESTAMP")])
+    updated_at = DateTimeField(constraints=[SQL("CURRENT_TIMESTAMP")])
+
+    class Meta:
+        database = db
+        indexes = ((("student_id",), False),)
+
+        constraints = [
+            Check("is_published IN (0, 1)"),
+            Check("review_end_date IS NULL OR review_end_date >= review_start_date"),
+        ]
