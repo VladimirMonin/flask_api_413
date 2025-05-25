@@ -216,3 +216,70 @@ for student in students:
     print(
         f"{student.first_name} {student.middle_name} - {student.group_id.group_name}"
     )  # Выводим имя студента и название группы
+
+###################################### CREATE ЗАПРОСЫ ######################################
+
+# Создание новой группы - самый простой вариант
+# new_group = Groups.create(group_name="python412")
+
+# Метод который не создаст объект, если он уже существует
+new_group, created = Groups.get_or_create(group_name="python412")
+
+print(f"Группа создана: {created}, объект: {new_group}")
+
+# Переменная под новые группы
+new_groups = [
+    {"group_name": "python419"},
+    {"group_name": "python422"},
+]
+
+# Множественное создание групп через bulk_create
+new_groups_objects = [Groups(**group) for group in new_groups]
+
+# Создаем группы в БД
+# Groups.bulk_create(new_groups_objects)
+
+# Проверим, что группы создались
+all_groups = Groups.select()
+print(f"Всего групп в БД: {len(all_groups)}")
+
+new_student_data = {
+    "first_name": "Фродо",
+    "middle_name": "Бильбович",
+    "last_name": "Бэггинс",
+    "group_name": "python413",
+    "notes": "Студент из Шира. Клептоман. Любит драгоценности из золота. Берегите кольца. Обладает невидимостью!",
+}
+
+# Создание нового студента
+# new_student = Students.create(**new_student_data) # Так можно сделать при совпадении имен полей в модели и словаре
+
+# new_student = Students.create(
+#     group_id=Groups.get(Groups.group_name == new_student_data["group_name"]),
+#     **new_student_data
+# )
+
+# Поиск студента - Бэггинс 
+baggins = Students.get(Students.last_name == "Бэггинс")
+
+print(f"Студент найден: {baggins.first_name} {baggins.last_name} {baggins.group_id.group_name}")
+
+# Обновление студента. Изменим заметки по студенту baggins
+baggins.notes = "Студент из Шира. После возвращения с Роковой горы стал более сдержанным. Однако серебрянные вилки продолжают пропадать."
+
+# Сохраняем изменения
+baggins.save()
+
+# В одну строку добыть, обновить и сохранить
+baggins = (
+    Students.update(notes="Студент из Шира. После возвращения с Роковой горы стал более сдержанным. Однако серебрянные вилки продолжают пропадать.")
+    .where(Students.last_name == "Бэггинс")
+    .execute()
+)
+
+print(f"Студент обновлен: {baggins} строк(и) изменено")
+# После операции обновления, в переменную baggins будет записано количество измененных строк, а не объект студента.
+
+# Удаление студента
+baggins = Students.get(Students.last_name == "Бэггинс").delete_instance()
+
