@@ -25,6 +25,9 @@ class Students(Model):
     created_at = DateTimeField(default=datetime.datetime.now)
     updated_at = DateTimeField(default=datetime.datetime.now)
 
+    def __str__(self):
+        return f"{self.first_name} {self.middle_name or ''} {self.last_name} {self.group_id.group_name}"
+
     class Meta:
         database = db
         indexes = (

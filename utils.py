@@ -1,5 +1,5 @@
 from sqlite3 import IntegrityError
-from models import Groups
+from models import Groups, Students
 from peewee import DoesNotExist, IntegrityError
 import json
 import datetime
@@ -50,7 +50,7 @@ def create_group(group_name: str) -> Groups:
         print("Группа с таким именем уже существует.")
         raise
 
-def delete_group_id(group_id: int) -> bool:
+def delete_group_by_id(group_id: int) -> bool:
     """
     Удаляет группу по ID.
     """
@@ -65,7 +65,7 @@ def delete_group_id(group_id: int) -> bool:
         print("Невозможно удалить группу, так как она связана с другими записями.")
         raise
 
-def update_group_id(group_id: int, new_group_name: str) -> Optional[Groups]:
+def update_group_by_id(group_id: int, new_group_name: str) -> Optional[Groups]:
     """
     Обновляет имя группы по ID.
     """
@@ -109,3 +109,97 @@ if __name__ == "__main__":
             print(serialize_model_instance(group))
     else:
         print("Группы не найдены.")
+
+
+#################### СТУДЕНТЫ ####################
+
+def create_student(first_name: str, middle_name: Optional[str], last_name: str, group_id: int, notes: Optional[str] = None) -> Students:
+    # 1. Создание студента
+    student = Students.create(
+        first_name=first_name,
+        middle_name=middle_name,
+        last_name=last_name,
+        group_id=group_id,
+        notes=notes
+    )
+
+    # 2. Возвращаем экземпляр студента
+    return student
+
+
+def get_student_by_id(student_id: int) -> Optional[Students]:
+    """
+    Получает студента по ID.
+    """
+    try:
+        student = Students.get(Students.id == student_id)
+        return student
+    except DoesNotExist:
+        print("Студент не найден.")
+        raise
+
+def delete_student_by_id(student_id: int) -> bool:
+    """
+    Удаляет студента по ID.
+    """
+    try:
+        student = Students.get(Students.id == student_id)
+        student.delete_instance()
+        return True
+    except DoesNotExist:
+        print("Студент не найден.")
+        raise
+    except IntegrityError:
+        print("Невозможно удалить студента, так как он связан с другими записями.")
+        raise
+
+
+def update_student_by_id(**kwargs) -> Optional[Students]:
+    # 1. берем модель и проверяем что в кваргах есть все поля (кроме created_at updated_at)
+    required_fields = ['id', 'first_name', 'last_name', 'group_id', 'notes']
+    
+    if not all(field in kwargs for field in required_fields):
+        raise ValueError("Отсутствуют обязательные поля для обновления студента.")
+    
+    # 2. Получаем студента по ID
+    student_id = kwargs.pop('id')
+
+    try:
+        student = Students.get(Students.id == student_id)
+        
+        # 3. Обновляем поля студента
+        student.update(**kwargs)
+
+        student.save()
+        return student
+    
+    except DoesNotExist:
+        print("Студент не найден.")
+        raise
+
+def get_students_list(sort_direction: str = 'asc', group_filter: Optional[str] = None) -> list:
+    """
+    Получает список студентов с возможностью сортировки и фильтрации по названию группы.
+    """
+    query = Students.select().join(Groups)
+
+    if group_filter:
+        query = query.where(Groups.group_name.contains(group_filter))
+
+    if sort_direction == 'asc':
+        query = query.order_by(Students.last_name.asc())
+    elif sort_direction == 'desc':
+        query = query.order_by(Students.last_name.desc())
+
+    return list(query)
+
+
+# Протестируем добычу студентов
+if __name__ == "__main__":
+    students = get_students_list(sort_direction='asc', group_filter='413')
+    if students:
+        print("Список студентов:")
+        for student in students:
+            print(student)
+    else:
+        print("Студенты не найдены.")
