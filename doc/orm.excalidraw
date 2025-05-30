@@ -760,8 +760,8 @@
     {
       "id": "CEuMzLucDd-cVRb5U3rfR",
       "type": "text",
-      "x": 689.8243926861062,
-      "y": 915.4390361117205,
+      "x": 690.1354888775124,
+      "y": 912.0246836947283,
       "width": 59.8199462890625,
       "height": 25,
       "angle": 0,
@@ -777,8 +777,8 @@
       "index": "aP",
       "roundness": null,
       "seed": 598911022,
-      "version": 797,
-      "versionNonce": 888600754,
+      "version": 814,
+      "versionNonce": 1172802366,
       "isDeleted": false,
       "boundElements": [
         {
@@ -786,7 +786,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1748620890682,
+      "updated": 1748629146327,
       "link": null,
       "locked": false,
       "text": "app.py",
@@ -943,8 +943,8 @@
     {
       "id": "liRVHUa7cGtey3YmHQTmw",
       "type": "text",
-      "x": 504.7368888579339,
-      "y": 1113.379450149671,
+      "x": 499.4923820219964,
+      "y": 1118.7614081574834,
       "width": 66.99993896484375,
       "height": 25,
       "angle": 0,
@@ -960,8 +960,8 @@
       "index": "aU",
       "roundness": null,
       "seed": 1596732594,
-      "version": 1110,
-      "versionNonce": 2122616114,
+      "version": 1139,
+      "versionNonce": 180142782,
       "isDeleted": false,
       "boundElements": [
         {
@@ -969,7 +969,7 @@
           "type": "arrow"
         }
       ],
-      "updated": 1748620903843,
+      "updated": 1748629148810,
       "link": null,
       "locked": false,
       "text": "main.py",
@@ -985,8 +985,8 @@
     {
       "id": "cDP4To8JuBi0t7TIIgLNk",
       "type": "rectangle",
-      "x": 391.5774778239918,
-      "y": 1145.386440813635,
+      "x": 386.3329709880543,
+      "y": 1150.7683988214476,
       "width": 158.40216064453125,
       "height": 105.13114929199243,
       "angle": 0,
@@ -1004,19 +1004,19 @@
         "type": 3
       },
       "seed": 936941550,
-      "version": 810,
-      "versionNonce": 1333269870,
+      "version": 839,
+      "versionNonce": 1277012798,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1748620758484,
+      "updated": 1748629148810,
       "link": null,
       "locked": false
     },
     {
       "id": "lSnfF4vtlS1bsi48Hh52j",
       "type": "text",
-      "x": 420.48300281890454,
-      "y": 1182.2285931923561,
+      "x": 415.23849598296704,
+      "y": 1187.6105512001686,
       "width": 93.761962890625,
       "height": 18.929422791289742,
       "angle": 0,
@@ -1032,11 +1032,11 @@
       "index": "aW",
       "roundness": null,
       "seed": 59206702,
-      "version": 1742,
-      "versionNonce": 721689326,
+      "version": 1771,
+      "versionNonce": 335647614,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1748620916796,
+      "updated": 1748629148810,
       "link": null,
       "locked": false,
       "text": "Точка входа",
@@ -1107,9 +1107,9 @@
       "id": "CO-8RELPXzi5joTWSzIfM",
       "type": "arrow",
       "x": 496.233599589618,
-      "y": 918.9555446950561,
-      "width": 185.04306593600126,
-      "height": 7.709466024156427,
+      "y": 918.5644606885171,
+      "width": 185.3541621274074,
+      "height": 5.20986577750466,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -1125,11 +1125,11 @@
         "type": 2
       },
       "seed": 443873646,
-      "version": 103,
-      "versionNonce": 795778610,
+      "version": 120,
+      "versionNonce": 2039444350,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1748620869945,
+      "updated": 1748629146327,
       "link": null,
       "locked": false,
       "points": [
@@ -1138,8 +1138,8 @@
           0
         ],
         [
-          185.04306593600126,
-          7.709466024156427
+          185.3541621274074,
+          5.20986577750466
         ]
       ],
       "lastCommittedPoint": null,
@@ -1160,10 +1160,10 @@
     {
       "id": "f8HJ1Ra3vpA0LEsC7hN05",
       "type": "arrow",
-      "x": 619.6186206965932,
-      "y": 1055.6304758297586,
-      "width": 71.0845224388571,
-      "height": 48.24904256070363,
+      "x": 620.417450118968,
+      "y": 1056.2464109176817,
+      "width": 77.21361026803936,
+      "height": 53.015065480592966,
       "angle": 0,
       "strokeColor": "#1e1e1e",
       "backgroundColor": "transparent",
@@ -1179,11 +1179,11 @@
         "type": 2
       },
       "seed": 1083307058,
-      "version": 116,
-      "versionNonce": 1111064498,
+      "version": 145,
+      "versionNonce": 1842461438,
       "isDeleted": false,
       "boundElements": [],
-      "updated": 1748620904328,
+      "updated": 1748629148810,
       "link": null,
       "locked": false,
       "points": [
@@ -1192,8 +1192,8 @@
           0
         ],
         [
-          -71.0845224388571,
-          48.24904256070363
+          -77.21361026803936,
+          53.015065480592966
         ]
       ],
       "lastCommittedPoint": null,
@@ -1210,6 +1210,43 @@
       "startArrowhead": null,
       "endArrowhead": "arrow",
       "elbowed": false
+    },
+    {
+      "id": "LoxkHNBlF6ty5FAoyP3DV",
+      "type": "text",
+      "x": 872.760760676038,
+      "y": 945.3048964447999,
+      "width": 437.49969482421875,
+      "height": 325,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "aq",
+      "roundness": null,
+      "seed": 2019700514,
+      "version": 285,
+      "versionNonce": 1034695138,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1748629369807,
+      "link": null,
+      "locked": false,
+      "text": "127.0.0.1/group/list/?фильтры - список групп\n127.0.0.1/group/1/ - группа с id 1\n127.0.0.1/group/1/delete/ - удалить группу\n127.0.0.1/group/1/update/ - обновить группу\n\n127.0.0.1/students/...\n127.0.0.1/lessons/...\n..........\n\nReact Angular VueJS\nДругие API\nИИ\n",
+      "fontSize": 20,
+      "fontFamily": 5,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "containerId": null,
+      "originalText": "127.0.0.1/group/list/?фильтры - список групп\n127.0.0.1/group/1/ - группа с id 1\n127.0.0.1/group/1/delete/ - удалить группу\n127.0.0.1/group/1/update/ - обновить группу\n\n127.0.0.1/students/...\n127.0.0.1/lessons/...\n..........\n\nReact Angular VueJS\nДругие API\nИИ\n",
+      "autoResize": true,
+      "lineHeight": 1.25
     }
   ],
   "appState": {
