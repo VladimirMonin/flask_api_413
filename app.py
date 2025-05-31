@@ -3,7 +3,7 @@ Flask приложение для работы с API "Academy"
 """
 
 from flask import Flask, jsonify, request
-from utils import get_group_by_id, get_groups_list
+from utils import get_group_by_id, get_groups_list, get_student_by_id
 from peewee import DoesNotExist, IntegrityError
 
 # Создаем экземпляр Flask приложения
@@ -59,6 +59,28 @@ def list_groups():
 
     return jsonify(groups_list), 200
 
+
+# Добыть студента по ID
+@app.route("/student/<int:student_id>", methods=["GET"])
+def get_student(student_id):
+    try:
+        student = get_student_by_id(student_id)  # Предполагается, что функция работает с ID студента
+
+    except DoesNotExist:
+        return jsonify({"error": "Студент не найден"}), 404
+    
+    else:
+        student_dict = {
+            "id": student.id,
+            "first_name": student.first_name,
+            "middle_name": student.middle_name,
+            "last_name": student.last_name,
+            "group_id": student.group_id.id,
+            "group_name": student.group_id.group_name,
+            "created_at": student.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+        }
+        
+        return jsonify(student_dict), 200
 
 # Запуск приложения
 if __name__ == "__main__":

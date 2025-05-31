@@ -200,7 +200,7 @@ def get_student_by_id(
             query = query.join(Groups)
 
         student = query.where(Students.id == student_id).get()
-        return serialize_model_instance(student, expand_fields)
+        return student 
     except DoesNotExist:
         return None
 
