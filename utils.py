@@ -108,7 +108,8 @@ def get_group_by_id(group_id: int) -> Optional[Groups]:
         group = Groups.get(Groups.id == group_id)
         return group
     except DoesNotExist:
-        return None
+        print(f"Группа с ID {group_id} не найдена.")
+        raise
 
 
 def create_group(group_name: str) -> Groups:
