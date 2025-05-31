@@ -3,7 +3,7 @@ Flask приложение для работы с API "Academy"
 """
 
 from flask import Flask, jsonify, request
-from utils import get_group_by_id
+from utils import get_group_by_id, get_groups_list
 from peewee import DoesNotExist, IntegrityError
 
 # Создаем экземпляр Flask приложения
@@ -31,6 +31,35 @@ def get_group(group_id):
         }
         
         return jsonify(group_dict), 200
+    
+
+# /group/list/?sort_direction=desc&name_filter=413
+# /group/list/
+# http://127.0.0.1:5000/group/list/?sort_direction=desc&name_filter=1
+@app.route("/group/list/", methods=["GET"])
+def list_groups():
+    
+    # Пробуем добыть параметры из URL запроса
+    sort_direction = request.args.get("sort_direction", "asc")
+    name_filter = request.args.get("name_filter")
+    
+    if sort_direction not in ["asc", "desc"]:
+        return jsonify({"error": "Неверное направление сортировки"}), 400
+    
+    groups = get_groups_list(sort_direction, name_filter)
+
+    groups_list = []
+    for group in groups:
+        group_dict = {
+            "id": group.id,
+            "group_name": group.group_name,
+            "created_at": group.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+        }
+        groups_list.append(group_dict)
+
+    return jsonify(groups_list), 200
+
+
 # Запуск приложения
 if __name__ == "__main__":
     app.run(debug=True)
