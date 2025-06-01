@@ -108,6 +108,15 @@ def update_group(group_id):
 
     return jsonify(group_dict), 200
 
+@app.route("/group/delete/<int:group_id>", methods=["DELETE"])
+def delete_group(group_id):
+    try:
+        delete_group_id(group_id)  # Предполагается, что функция удаляет группу по ID
+
+    except DoesNotExist:
+        return jsonify({"error": "Группа не найдена"}), 404
+    
+    return jsonify({"message": "Группа успешно удалена"}), 200
 
 
 # Добыть студента по ID
