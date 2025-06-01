@@ -3,7 +3,7 @@ Flask приложение для работы с API "Academy"
 """
 
 from flask import Flask, jsonify, request
-from utils import get_group_by_id, get_groups_list, get_student_by_id, create_group
+from utils import get_group_by_id, get_groups_list, get_student_by_id, create_group, update_group_id, delete_group_id
 from peewee import DoesNotExist, IntegrityError
 
 # Создаем экземпляр Flask приложения
@@ -11,7 +11,6 @@ app = Flask(__name__)
 
 # Конфигурация приложения - выключим ascii режим для поддержки кириллицы
 app.config["JSON_AS_ASCII"] = False
-
 
 # Делаем первый маршрут для добычи группы по ID 
 # http://127.0.0.1:5000/group/1
@@ -82,6 +81,33 @@ def group_create():
     }
 
     return jsonify(group_dict), 201
+
+@app.route("/group/update/<int:group_id>", methods=["PUT"])
+def update_group(group_id):
+    # Получаем данные из запроса
+    data = request.get_json()
+    group_name = data.get("group_name")
+
+    if not group_name:
+        return jsonify({"error": "Название группы обязательно"}), 400
+
+    try:
+        updated_group = update_group_id(group_id, group_name)
+
+    except DoesNotExist:
+        return jsonify({"error": "Группа не найдена"}), 404
+    
+    except IntegrityError:
+        return jsonify({"error": "Группа с таким названием уже существует"}), 400
+
+    group_dict = {
+        "id": updated_group.id,
+        "group_name": updated_group.group_name,
+        "created_at": updated_group.created_at.strftime("%Y-%m-%d %H:%M:%S"),
+    }
+
+    return jsonify(group_dict), 200
+
 
 
 # Добыть студента по ID

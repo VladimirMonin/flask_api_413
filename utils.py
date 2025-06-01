@@ -146,10 +146,23 @@ def update_group_id(group_id: int, new_group_name: str) -> Optional[Groups]:
     Обновляет имя группы по ID.
     """
     try:
+        # Сначала проверим, что группа существует
         group = Groups.get(Groups.id == group_id)
-        group.group_name = new_group_name
-        group.save()
-        return group
+
+        # Выполняем атомарное обновление
+        rows_updated = (
+            Groups.update(group_name=new_group_name)
+            .where(Groups.id == group_id)
+            .execute()
+        )
+
+        if rows_updated == 0:
+            raise DoesNotExist("Группа не найдена")
+
+        # Получаем обновленную группу
+        updated_group = Groups.get(Groups.id == group_id)
+        return updated_group
+
     except DoesNotExist:
         print("Группа не найдена.")
         raise
@@ -200,7 +213,7 @@ def get_student_by_id(
             query = query.join(Groups)
 
         student = query.where(Students.id == student_id).get()
-        return student 
+        return student
     except DoesNotExist:
         return None
 
