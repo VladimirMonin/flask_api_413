@@ -5,12 +5,6 @@
 
 Функции:
 
-serialize_model_instance(instance, expand_fields: Optional[List[str]] = None) -> dict
-    Сериализует объект модели в словарь, поддерживает раскрытие связанных объектов (expand).
-
-serialize_to_json(instance, expand_fields: Optional[List[str]] = None) -> str
-    Сериализует объект модели в JSON-строку.
-
 get_group_by_id(group_id: int) -> Optional[Groups]
     Возвращает группу по ID или None, если не найдено.
 
@@ -51,53 +45,6 @@ import json
 import datetime
 from typing import Optional, List, Dict, Any
 
-
-# Улучшенная функция сериализации с поддержкой expand для связанных объектов
-def serialize_model_instance(instance, expand_fields: Optional[List[str]] = None):
-    """
-    Сериализует объект модели в словарь, включая только определенные поля.
-
-    Args:
-        instance: Экземпляр модели для сериализации
-        expand_fields: Список полей для раскрытия связанных объектов (например, ['group'])
-    """
-    serialized_data = {}
-    expand_fields = expand_fields or []
-
-    # _meta.sorted_fields позволяет получить все поля модели в порядке их определения
-    for field in instance._meta.sorted_fields:
-        field_data = getattr(instance, field.name)
-
-        # Проверяем если это ForeignKey и нужно его раскрыть
-        # rel_model - это модель, на которую ссылается ForeignKey
-        if (
-            hasattr(field, "rel_model")
-            and field.name.replace("_id", "") in expand_fields
-        ):
-            # Получаем связанный объект
-            related_field_name = field.name.replace("_id", "")
-            if hasattr(instance, related_field_name):
-                related_object = getattr(instance, related_field_name)
-                serialized_data[related_field_name] = serialize_model_instance(
-                    related_object
-                )
-            continue
-
-        # Проверяем если данные являются объектом даты или времени - превращаем их в строку
-        if isinstance(field_data, (datetime.date, datetime.datetime)):
-            serialized_data[field.name] = field_data.isoformat()
-        else:
-            serialized_data[field.name] = field_data
-
-    return serialized_data
-
-
-def serialize_to_json(instance, expand_fields: Optional[List[str]] = None):
-    """
-    Сериализует объект модели в JSON строку.
-    """
-    serialized_data = serialize_model_instance(instance, expand_fields)
-    return json.dumps(serialized_data, indent=4, ensure_ascii=False)
 
 
 def get_group_by_id(group_id: int) -> Optional[Groups]:
@@ -256,7 +203,7 @@ def create_student(
             updated_at=datetime.datetime.now(),
         )
 
-        return serialize_model_instance(student)
+        return student
 
     except DoesNotExist:
         print(f"Группа с ID {group_id} не найдена.")
@@ -296,7 +243,7 @@ def update_student_by_id(student_id: int, **kwargs) -> Optional[Dict[str, Any]]:
         student.updated_at = datetime.datetime.now()
         student.save()
 
-        return serialize_model_instance(student)
+        return student
 
     except DoesNotExist:
         print(f"Студент с ID {student_id} не найден или указана несуществующая группа.")
@@ -407,9 +354,7 @@ def get_students_by_group_name(
         query = query.order_by(Students.last_name.asc(), Students.first_name.asc())
 
         students = list(query)
-        return [
-            serialize_model_instance(student, expand_fields) for student in students
-        ]
+        return students
 
     except DoesNotExist:
         print(f"Группа с названием '{group_name}' не найдена.")
