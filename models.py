@@ -5,6 +5,7 @@ db = SqliteDatabase("academy_orm.db")
 
 # Группы
 class Groups(Model):
+    id = AutoField()
     group_name = CharField(unique=True, null=False, max_length=50)
     created_at = DateTimeField(default=datetime.datetime.now)
     updated_at = DateTimeField(default=datetime.datetime.now)
@@ -18,6 +19,7 @@ class Groups(Model):
 
 # Таблица students
 class Students(Model):
+    id = AutoField()
     first_name = CharField(max_length=50)
     middle_name = CharField(null=True, max_length=50)
     last_name = CharField(max_length=50)
