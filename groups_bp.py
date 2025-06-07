@@ -1,6 +1,7 @@
 from utils import get_group_by_id, get_groups_list, create_group, update_group_id, delete_group_id
 from flask import Blueprint, jsonify, request
 from peewee import DoesNotExist, IntegrityError
+from utils import check_access
 
 # Создаем экземпляр Blueprint
 # url_prefix='/group' - префикс для всех маршрутов в этом Blueprint
@@ -8,9 +9,13 @@ from peewee import DoesNotExist, IntegrityError
 groups_bp = Blueprint('groups', __name__, url_prefix='/group')
 
 
-
 @groups_bp.route("/<int:group_id>", methods=["GET"])
 def get_group(group_id):
+    
+    # Проверяем доступ пользователя
+    if not check_access(request, "user"):
+        return jsonify({"error": "Доступ запрещен"}), 403
+    
     try:
         group = get_group_by_id(group_id)
     

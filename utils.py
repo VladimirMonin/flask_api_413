@@ -44,6 +44,47 @@ from peewee import DoesNotExist, IntegrityError
 import json
 import datetime
 from typing import Optional, List, Dict, Any
+from api_keys import users
+from typing import Literal
+
+
+# Функция которая принемает request и роль и возвращает True если у пользователя есть доступ, иначе False
+def check_access(request, role: Literal["admin", "moderator", "user"]) -> bool:
+    """
+    Проверяет доступ пользователя на основе его роли и API ключа.
+
+    Args:
+        request: Объект запроса, содержащий заголовки.
+        role: Роль пользователя, может быть "admin", "moderator" или "user".
+
+    Returns:
+        bool: True, если пользователь имеет доступ, иначе False.
+    """
+    api_key = request.headers.get("X-API-KEY")
+    
+    # 1. Найти пользователя
+    try: 
+        user = next(user for user in users if user["api_key"] == api_key)
+
+    except StopIteration: 
+        return False  # Пользователь не найден
+    
+    # 2. Проверить роль пользователя
+    user_role = user["role"]  # Получаем роль пользователя
+
+    # 3. Если пользователь admin, то он имеет доступ к любым данным
+    if user_role == "admin":  # Если роль admin, то доступ разрешен
+        return True  # Доступ разрешен
+    
+    # 4. Если пользователь moderator, то он имеет доступ к данным moderator и user
+    if user_role == "moderator" and role in ["moderator", "user"]:  # Если роль moderator, то доступ разрешен для
+        return True  # Доступ разрешен
+    # 5. Если пользователь user, то он имеет доступ только к своим данным
+    if user_role == "user" and role == "user":  # Если роль user, то доступ разрешен только для user
+        return True  # Доступ разрешен
+    
+    else:
+        return False  # Доступ запрещенq
 
 
 
